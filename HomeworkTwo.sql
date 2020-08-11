@@ -19,7 +19,7 @@ where Gender='m'
 --Find all Students with LastName starting With ‘T’​
 select *
 from Student
-where  LastName like 's%'
+where  LastName like 't%'
 
 --Find all Students Enrolled in January/1998​
 select *
@@ -67,7 +67,7 @@ from Student
 
 select FirstName
 from Teacher
-union 
+intersect 
 select FirstName
 from Student
 group by FirstName
