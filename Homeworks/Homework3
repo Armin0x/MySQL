@@ -1,0 +1,88 @@
+
+
+--Calculate the count of all grades in the system
+select count (*) as Total
+from Grade
+
+--Calculate the count of all grades per Teacher in the system
+select TeacherID, count (*) as Total
+from Grade
+group by TeacherID
+order by TeacherID
+
+
+--Calculate the count of all grades per Teacher in the system for first 100 Students (ID < 100)
+select top (100) TeacherID, count (*) as Total
+from Grade
+where StudentID<100
+group by TeacherID
+
+
+--Find the Maximal Grade, and the Average Grade per Student on all grades in the system
+select StudentId, max(grade) as MaximalGrade, avg (grade) as AverageGrade
+from Grade
+group by StudentID
+order by StudentID
+
+--Calculate the count of all grades per Teacher in the system and filter only grade count greater then 200
+select TeacherID, count (*) as Total
+from Grade
+group by TeacherID
+having count (*)>200
+order by Total
+
+--Calculate the count of all grades per Teacher in the system for first 100 Students (ID < 100) and filter teachers with more than 50 Grade count
+select top (100) TeacherID, count (*) as Total
+from Grade
+where StudentID<100
+group by TeacherID
+having count (*)>50
+order by Total desc
+
+--Find the Grade Count, Maximal Grade, and the Average Grade per Student on all grades in the system. Filter only records where Maximal Grade is equal to Average Grade
+select StudentId, max(grade) as MaximalGrade, avg (grade) as AverageGrade
+from Grade
+group by StudentID
+having max(grade)= avg (grade)
+order by StudentID
+
+--List Student First Name and Last Name next to the other details from previous query
+select g.StudentId,s.FirstName, s.LastName, max(grade) as MaximalGrade, avg (grade) as AverageGrade
+from Grade as g
+inner join Student as s on g.StudentID=s.ID
+group by StudentID, s.FirstName, s.LastName
+having max(grade)= avg (grade)
+order by StudentID
+
+--Create new view (vv_StudentGrades) that will List all StudentIds and count of Grades per student
+
+create view vv_StudentGrades
+as
+select StudentId, count (*) as Total
+from Grade
+group by StudentID
+
+--Change the view to show Student First and Last Names instead of StudentID
+
+alter view vv_StudentGrades
+as
+select s.FirstName, s.LastName,count (*) as Total
+from Grade as g
+inner join Student as s on s.ID=g.StudentID
+group by s.FirstName, s.LastName
+
+
+--List all rows from view ordered by biggest Grade Count
+
+select *
+from vv_StudentGrades
+order by Total  desc
+
+--Create new view (vv_StudentGradeDetails) that will List all Students (FirstName and LastName) and Count the courses he passed through the exam(Ispit)
+create view vv_StudentGradeDetails
+as
+select s.FirstName, s.LastName, count (*) as Total
+from Grade as g
+inner join Student as s on s.ID=g.StudentID
+inner join Course as c on c.ID=g.CourseID
+group by s.FirstName, s.LastName
